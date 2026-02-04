@@ -81,7 +81,7 @@
 \section{2D Sampling Theorem}
 Have signal $f(x,y) \rightleftarrows F(\omega_1,\omega_2)$, we want to represent using a discrete sequence $f[m,n]$, where $f[m,n] = f(mD_x,nD_y)$. So ideal model multiplies $f(x,y)$ by a grid of delta functions \textcolor{blue}{$s(x,y)$}.
 \begin{equation}
-    s(x,y) = \sum_{n1=-\infty}^{{\infty}}\sum_{n2=-\infty}^{{\infty}}\delta(x-nD_x,y-n_2D_y),
+    s(x,y) = \sum_{n_1=-\infty}^{{\infty}}\sum_{n2=-\infty}^{{\infty}}\delta(x-nD_x,y-n_2D_y),
 \end{equation}
 Where $D_x, D_y$ are the distance between points, i.e. the horizontal/vertical \textit{period}. 
 
@@ -116,14 +116,14 @@ Infinite sum of sinusoids where each wave ($\omega_1,\omega_2$) has weight $a_{k
 \end{itemize}
 The other waves in the series are just going to be integer multiples ($k_1,k_2$) of the base frequencies.
 
-Ok, you already know to get the fourier series coefficents you integrate the singla over one period and divide by the area of the period:
+Ok, you already know to get the fourier series coefficients you integrate the signal  over one period and divide by the area of the period:
 \begin{equation}
-    a_{k_,k_2} = \frac{1}{D_xD_y}\int_{-Dy/2}^{Dy/2}\int_{-Dx/2}^{Dx/2}s(x,y)e^{-j(k_1\omega_1^0x + k_2\omega_2^0y)}dx\,dy
+    a_{k_1,k_2} = \frac{1}{D_xD_y}\int_{-Dy/2}^{Dy/2}\int_{-Dx/2}^{Dx/2}s(x,y)e^{-j(k_1\omega_1^0x + k_2\omega_2^0y)}dx\,dy
 \end{equation}
 
 In this integration window of one period the repeating grid $s(x,y)$, contains a single impulse at the origin. So equivalently:
 \begin{align}
-    a_{k_,k_2} &= \frac{1}{D_xD_y}\int_{-Dy/2}^{Dy/2}\int_{-Dx/2}^{Dx/2}\delta(x,y)e^{-j(k_1\omega_1^0x + k_2\omega_2^0y)}dx\,dy\notag\\
+    a_{k_1,k_2} &= \frac{1}{D_xD_y}\int_{-Dy/2}^{Dy/2}\int_{-Dx/2}^{Dx/2}\delta(x,y)e^{-j(k_1\omega_1^0x + k_2\omega_2^0y)}dx\,dy\notag\\
     &= \frac{1}{D_xD_y} \quad\text{By the sifting property of the $\delta$ function}
 \end{align}
 
@@ -162,7 +162,7 @@ What do we learn from this?
 \subsection{Sampling Theorem}
 Right so we know the signal is repeated every $\omega\,k$ steps. We want to avoid overlap between these harmonics. 
 
-If we \textbf{lower the sampling rate,} \textbf{by making $D$ larger}, the \textbf{sampling frequency $\omega = \frac{2\pi}{D}$ get smaller}. Visually, the spectrums (hexagons) get closer together, eventually colliding.  This called \textbf{Aliasing}, the negative part of the closes aliases/fundamentals/harmonics crash into the base frequency spectrum. 
+If we \textbf{lower the sampling rate,} \textbf{by making $D$ larger}, the \textbf{sampling frequency $\omega = \frac{2\pi}{D}$ get smaller}. Visually, the spectrums (hexagons) get closer together, eventually colliding.  This called \textbf{Aliasing}, the negative part of the closest aliases/fundamentals/harmonics crash into the base frequency spectrum. 
 
 \paragraph{Nyquist's Theorem in 2D states:} $\omega_1^0 > 2\Omega_1$ AND $\omega_2^0 > 2\Omega_2$ for no aliasing to occur. ``Sampling frequency $w_0$ must be greater than twice the maximum frequency in the image''. 
 
@@ -233,7 +233,7 @@ Shifting the rectangle as shown in Fig.~\ref{fig:shift_rect_demo}.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.75\linewidth]{centering_fourier.png}
-    \caption{Enter Caption}
+    \caption{centering the Fourier Spectrum}
     \label{fig:shift_rect_demo}
 \end{figure}
 
@@ -247,7 +247,7 @@ or
     |F(u,v)| = |F(-u,-v)|
 \end{equation}
 
-Transformscan be expressed as matrix operations on rows, then columns:
+Transform scan be expressed as matrix operations on rows, then columns:
 \begin{equation*}
     F = W^TIW
 \end{equation*}
@@ -271,14 +271,14 @@ Remember aliasing and periodicity. In the frequency domain, we have infinite cop
 \begin{align*}
     \text{Sampling interval: }& D\\
     \text{Sampling rate: }&\Omega_0 = \frac{2\pi}{D}\\
-    \text{Nquist Limit: }& \frac{\pi}{D} 
+    \text{Nyquist Limit: }& \frac{\pi}{D} 
 \end{align*}
 
 \textbf{After downsampling:}
 \begin{align*}
     \text{Sampling interval: }& 2D\\
     \text{Sampling rate: }& \Omega = \frac{\Omega_0}{N} =\frac{2\pi}{D}\frac{1}{2} = \frac{2\pi}{2D} = \frac{\pi}{D}\\
-    \text{Nquist Limit: }& = \frac{\Omega_0}{N}\frac{1}{2} = \frac{\Omega}{2} = \frac{\pi}{2D} 
+    \text{Nyquist Limit: }& = \frac{\Omega_0}{N}\frac{1}{2} = \frac{\Omega}{2} = \frac{\pi}{2D} 
 \end{align*}
 According to slides: ``The spectrum of the sampled signal $f[m,n]$ contains scaled copies of the original spectrum $F(\omega_1,\omega_2)$ at integer multiples of $[\Omega_0,\Omega_0]$. If the sampling rate is reduced to $[\Omega_0/N,\Omega_0/N]$ the replicas move closer together. 
 
@@ -340,7 +340,7 @@ The sinc function is infinitely long so the filter is IIR. So we need to truncat
     h[m,n] = \left[\frac{w[m]}{N}\text{sinc}\left(\frac{m\pi}{N}\right)\right] \left[\frac{w[n]}{N}\text{sinc}\left(\frac{n\pi}{N}\right)\right]
 \end{equation}
 
-where $w$ is the Hamming window. In Fig.~\ref{fig:hamming} we see the FIR filter with rectange and hamming window. Hamming sacrifices slower roll off to remove the ripple.
+where $w$ is the Hamming window. In Fig.~\ref{fig:hamming} we see the FIR filter with rectangle and hamming window. Hamming sacrifices slower roll off to remove the ripple.
 
 \begin{figure}[h]
     \centering
@@ -354,7 +354,7 @@ Last slide says Sinc function is long and expensive, similar results can be achi
 \begin{equation}
     h[m,n] = \textrm{exp}-\left(\frac{m^2+n^2}{2\sigma^2}\right),
 \end{equation}
-where $\sigma$ affects the bandwidth. Need to specify the number of taps and normalise the filter coefficients so that the sum to 1. $h = h/\text{sum}(h)$. With this can get wat with shorter filter (15 taps). 
+where $\sigma$ affects the bandwidth. Need to specify the number of taps and normalise the filter coefficients so that they sum to 1. $h = h/\text{sum}(h)$. With this can get away with shorter filter (15 taps). 
 
 Zooming or upsampling is \textit{much} harder.
 
