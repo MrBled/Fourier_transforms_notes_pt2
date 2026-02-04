@@ -1,0 +1,384 @@
+\documentclass{article}
+
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{thmtools}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage[parfill]{parskip}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[sfdefault]{FiraSans}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{framed}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, calc}
+
+\usetikzlibrary{decorations.pathreplacing, arrows.meta, calc}
+\usepackage{tcolorbox}
+\usepackage{xcolor}
+\definecolor{lightgrey}{gray}{0.9}
+
+\colorlet{LightGray}{White!90!Periwinkle}
+\colorlet{LightOrange}{Orange!15}
+\colorlet{LightGreen}{Green!15}
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}}
+
+\declaretheoremstyle[name=Theorem,]{thmsty}
+\declaretheorem[style=thmsty,numberwithin=section]{theorem}
+\tcolorboxenvironment{theorem}{colback=LightGray}
+
+\declaretheoremstyle[name=Proposition,]{prosty}
+\declaretheorem[style=prosty,numberlike=theorem]{proposition}
+\tcolorboxenvironment{proposition}{colback=LightOrange}
+
+\declaretheoremstyle[name=Principle,]{prcpsty}
+\declaretheorem[style=prcpsty,numberlike=theorem]{principle}
+\tcolorboxenvironment{principle}{colback=LightGreen}
+
+\declaretheoremstyle[name=Definition,]{prcpsty}
+\declaretheorem[style=prcpsty,numberlike=theorem]{definition}
+\tcolorboxenvironment{definition}{colback=Orange}
+
+\setstretch{1.2}
+\geometry{
+    textheight=9in,
+    textwidth=5.5in,
+    top=1in,
+    headheight=12pt,
+    headsep=25pt,
+    footskip=30pt
+}
+
+% ------------------------------------------------------------------------------
+
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% Cover Page and ToC
+% ------------------------------------------------------------------------------
+
+\title{ \normalsize \textsc{}
+		\\ [2.0cm]
+		\HRule{1.5pt} \\
+		\LARGE \textbf{Transforms PT II
+		\HRule{2.0pt} \\ [0.6cm] \LARGE{Image Processing Extra Material} \vspace*{10\baselineskip}}
+		}
+\date{}
+\author{\textbf{Dr. Cl\'ement Bled}}
+
+\maketitle
+\newpage
+
+% \tableofcontents
+% \newpage
+
+% ------------------------------------------------------------------------------
+\section{2D Sampling Theorem}
+Have signal $f(x,y) \rightleftarrows F(\omega_1,\omega_2)$, we want to represent using a discrete sequence $f[m,n]$, where $f[m,n] = f(mD_x,nD_y)$. So ideal model multiplies $f(x,y)$ by a grid of delta functions \textcolor{blue}{$s(x,y)$}.
+\begin{equation}
+    s(x,y) = \sum_{n1=-\infty}^{{\infty}}\sum_{n2=-\infty}^{{\infty}}\delta(x-nD_x,y-n_2D_y),
+\end{equation}
+Where $D_x, D_y$ are the distance between points, i.e. the horizontal/vertical \textit{period}. 
+
+As we said sampling is $f_s(x,y) = f(x,y)s(x,y)$. What's the relationship between $F(\omega_1,\omega_2)$ and $F_s(\omega_1,\omega_2)$?
+
+$s(x,y)$ is the dirac comb. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{dirac_delat_spatial_freq.png}
+    \caption{\textbf{Visualising the components of 2D sampling.} The left graph depicts the spatial sampling function $s(x,y)$ as a uniform grid of impulse points (Dirac deltas) spaced by intervals $D_x$ and $D_y$. The right graph illustrates the frequency spectrum $F(\omega_1, \omega_2)$ of the original continuous image, represented as a shaded hexagonal region bounded by maximum frequencies $\pm\Omega_1$ and $\pm\Omega_2$.}
+    \label{fig:delat_func}
+    \label{fig:placeholder}
+\end{figure}
+In the Fourier domain we have:
+\begin{equation}
+    F_s(\omega_1,\omega_2) \circledast S(\omega_1,\omega_2)
+\end{equation}
+Need to get FT of $S(\omega_1,\omega_2)$.  
+
+If a signal is infinite, it can be represented by a Fourier \textbf{series}. Remember 2D Fourier series:
+
+\begin{equation}
+    s(x,y) = \sum_{k_1=\infty}^{\infty}\sum_{k_2=\infty}^{\infty} = a_{k1,k2}e^{j(k_1\omega_1^0x + k_2\omega_2^0y)}
+    \label{eqn:Fourier_series}
+\end{equation}
+
+Infinite sum of sinusoids where each wave ($\omega_1,\omega_2$) has weight $a_{k1,k2}$. We know the grid spacing is $D$ so the frequencies are going to fit inside those. 
+\begin{itemize}
+    \item The base frequency for x, $\omega_1$ is therefore $\omega_1^0=\frac{2\pi}{D_x}$.
+    \item The base frequency for y, $\omega_2$ is therefore $\omega_2^0=\frac{2\pi}{D_y}$.
+\end{itemize}
+The other waves in the series are just going to be integer multiples ($k_1,k_2$) of the base frequencies.
+
+Ok, you already know to get the fourier series coefficents you integrate the singla over one period and divide by the area of the period:
+\begin{equation}
+    a_{k_,k_2} = \frac{1}{D_xD_y}\int_{-Dy/2}^{Dy/2}\int_{-Dx/2}^{Dx/2}s(x,y)e^{-j(k_1\omega_1^0x + k_2\omega_2^0y)}dx\,dy
+\end{equation}
+
+In this integration window of one period the repeating grid $s(x,y)$, contains a single impulse at the origin. So equivalently:
+\begin{align}
+    a_{k_,k_2} &= \frac{1}{D_xD_y}\int_{-Dy/2}^{Dy/2}\int_{-Dx/2}^{Dx/2}\delta(x,y)e^{-j(k_1\omega_1^0x + k_2\omega_2^0y)}dx\,dy\notag\\
+    &= \frac{1}{D_xD_y} \quad\text{By the sifting property of the $\delta$ function}
+\end{align}
+
+$a$ can be plugged back into eqn~\ref{eqn:Fourier_series}:
+\begin{equation}
+    s(x,y) = \frac{1}{D_xD_y}\sum_{k1=-\infty}^{\infty}\sum_{k2=-\infty}^{\infty}e^{j(k_1w_1^0x + k_2w_2^0y)}
+\end{equation}
+
+\begin{center}
+\colorbox{lightgrey}{
+  \begin{minipage}{0.9\textwidth}
+    \textbf{Reminder:} The Fourier transform of a complex exponential is a Dirac Delta/impulse, with $e^{j\Omega x}$ having a frequency of $\Omega$ which will be a single impulse at that frequency: $\delta(\omega-\Omega)$.
+  \end{minipage}
+}
+\end{center}
+
+Finally:
+\begin{equation}
+    S(\omega_1,\omega_2) = \frac{1}{D_xD_y}\sum_{k1=-\infty}^{\infty}\sum_{k2=-\infty}^{\infty}\delta(\omega_1-k_1\omega_1^0,\omega_2-k_2\omega_2^0)
+\end{equation}
+
+So coming back to the sampled signal:
+\begin{align}
+    F_s &= F(\omega_1,\omega_2) \circledast S(\omega_1,\omega_2)\notag\\
+    &=\frac{1}{D_xD_y}\sum_{k1=-\infty}^{\infty}\sum_{k2=-\infty}^{\infty} F(\omega_1-k_1\omega_1^0,\omega_2-k_2\omega_2^0)
+    \label{eqn:sampling_discrete}
+\end{align}
+
+What do we learn from this?
+\begin{itemize}%[leftmargin=1em]
+  \renewcommand{\labelitemi}{$\rightarrow$}
+ \item \textbf{Replication:} Convolving any function by a delta function shift the function to the location of the delta. 
+ \item \textbf{Scaling:} The coefficients are inversely proportional to the sampled area. Large area = low density, small weight, Small area = high density, large scaling factor.
+\end{itemize}
+
+\subsection{Sampling Theorem}
+Right so we know the signal is repeated every $\omega\,k$ steps. We want to avoid overlap between these harmonics. 
+
+If we \textbf{lower the sampling rate,} \textbf{by making $D$ larger}, the \textbf{sampling frequency $\omega = \frac{2\pi}{D}$ get smaller}. Visually, the spectrums (hexagons) get closer together, eventually colliding.  This called \textbf{Aliasing}, the negative part of the closes aliases/fundamentals/harmonics crash into the base frequency spectrum. 
+
+\paragraph{Nyquist's Theorem in 2D states:} $\omega_1^0 > 2\Omega_1$ AND $\omega_2^0 > 2\Omega_2$ for no aliasing to occur. ``Sampling frequency $w_0$ must be greater than twice the maximum frequency in the image''. 
+
+This is a practical problem that comes into play when sampling from analogue to digital: the max frequency a camera can capture is dictated by the pixel pitch. A low pass filter is needed to avoid sampling those higher frequencies that would cause frequency overlap. 
+
+Same principle when resizing digital images. When you shrink an image, the new sampling rate is lower, the sampling rate drops to $2\pi/N\cdot D = \omega^0/N$. We need to make sure the max frequency is less than half $\omega^0/N$. Apply a LPF.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\linewidth]{notes_aliasing_exmaple.png}
+    \caption{Aliasing example. worst at high frequency (edges).}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\section{2D Discrete Fourier Transform}
+2D DFT is similar to the 1D version and is separable. 
+
+Given image of size $M\times N$:
+
+\begin{theorem}
+    \begin{align}
+        \textbf{FFT}: F[h,k] &= \sum_{n=0}^{N-1}\sum_{m=0}^{M-1}f[n,m]e^{-j\left(\frac{2\pi}{N}nh + \frac{2\pi}{M}mk\right)}\notag\\
+        \textbf{Inverse FFT}: f[n,m] &= \frac{1}{NM}\sum_{h=0}^{N-1}\sum_{k=0}^{M-1}F[h,k]e^{-j\left(\frac{2\pi}{N}nh + \frac{2\pi}{M}mk\right)}
+    \end{align}
+\end{theorem}
+\subsection{Properties of 2D FFT}
+
+\paragraph{Periodicity}
+Like in the 1D case, the 2D FFT is infinitely periodic in the direction of $\omega_1$ and $\omega_2$. 
+\begin{equation}
+    F(\omega_1,\omega_2) =  F(\omega_1+k_1M,\omega_2) = F(\omega_1,\omega_2+k_2N) = F(\omega_1+k_1M,\omega_2+k_2N)
+\end{equation}
+and 
+\begin{equation}
+    f(x,y) = f(x+k_1M,y) = f(x,y+k_2N) = f(x+k_1M,y+k_2N)
+\end{equation}
+where $k_1$ and $k_2$ are integers.
+
+The data in the interval $0$ to $M-1$ is actually two half periods meeting at $M/2$, with the lower part of the spectrum appearing at the higher frequencies. 
+
+This is not super meaningful when visualised so we reorder it using the translation:
+\begin{equation}
+    F(x)e^{j2\pi(u_0x/M)} \Leftrightarrow F(u - u_0)
+\end{equation}
+This moves the origin to $u_0$, so in our case we let $u_0 = M/2$, the exponential becomes $e^{j\pi x}$, which is equal to $(-1)^x$ because x is an integer. 
+In 1D we have:
+\begin{equation}
+    f(x)(-1)^x \Leftrightarrow F(u-M/2)
+\end{equation}
+So multiplying $f(x)$ by $(-1)^x$ shift the data so that $F(u)$ becomes centers on the interval $[0,M-1]$. In 2D it can be similary be proved that:
+\begin{equation}
+    f(x,y)(-1)^{x+y} \Leftrightarrow F(u-M/2,v-N/2),
+\end{equation}
+Shifting the rectangle as shown in Fig.~\ref{fig:shift_rect_demo}.
+
+% \begin{equation}
+%     F(\omega_1,\omega_2) = F^*(-u,-v)
+% \end{equation}
+% or
+% \begin{equation}
+%     |F(u,v)| = |F(-u,-v)|
+% \end{equation}
+
+% In other words, the spectrum is symmetric about the real axis. 
+
+% Because the Fourier transform is sampled with N positive indices in the range $[0,N-1]$ and not $[-N/2,N/2]$ we actually get the second half/higher of the fundamental frequency in first and the lower half from the next fundamental appearing after $N/2$. 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{centering_fourier.png}
+    \caption{Enter Caption}
+    \label{fig:shift_rect_demo}
+\end{figure}
+
+\paragraph{Symmetry} 
+Similarly, if $f(x,y)$ is real, the Fourier transform exhibits conjugate symmetry, it is centrally symmetric.
+\begin{equation}
+    F(\omega_1,\omega_2) = F^*(-u,-v)
+\end{equation}
+or
+\begin{equation}
+    |F(u,v)| = |F(-u,-v)|
+\end{equation}
+
+Transformscan be expressed as matrix operations on rows, then columns:
+\begin{equation*}
+    F = W^TIW
+\end{equation*}
+
+\section{Downsampling}
+We want to downsample an image by $N$. Same as taking the discrete time signal $f[m,n]$ and sampling every N samples. 
+\begin{equation*}
+    f_N[mN,nN]
+\end{equation*}
+From our sampling discussion, we know that the original image sampling rate is $[\Omega_0,\Omega_0] = [(2\pi/D),(2\pi/D)]$ radians per pel. See Fig.~\ref{fig:sampling1d}.
+
+We now want to reduce this to $[\Omega_0/N,\Omega_0/N]$ to get $f_N[m,n]$
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{sampling1D.png}
+    \caption{Top: Signal sampled at period of $T$. Bottom: Same signal downsampled by a factor of 2.}
+    \label{fig:sampling1d}
+\end{figure}
+
+Remember aliasing and periodicity. In the frequency domain, we have infinite copies of the spectrum at integer multiples of $\Omega$. We don't want these to overlap. Nyquist frequency is half our sampling rate. If we sample every second pixel, the Nyquist frequency decreases. The high frequencies are now greater than Nyquist. \\\textbf{Before downsampling:}
+\begin{align*}
+    \text{Sampling interval: }& D\\
+    \text{Sampling rate: }&\Omega_0 = \frac{2\pi}{D}\\
+    \text{Nquist Limit: }& \frac{\pi}{D} 
+\end{align*}
+
+\textbf{After downsampling:}
+\begin{align*}
+    \text{Sampling interval: }& 2D\\
+    \text{Sampling rate: }& \Omega = \frac{\Omega_0}{N} =\frac{2\pi}{D}\frac{1}{2} = \frac{2\pi}{2D} = \frac{\pi}{D}\\
+    \text{Nquist Limit: }& = \frac{\Omega_0}{N}\frac{1}{2} = \frac{\Omega}{2} = \frac{\pi}{2D} 
+\end{align*}
+According to slides: ``The spectrum of the sampled signal $f[m,n]$ contains scaled copies of the original spectrum $F(\omega_1,\omega_2)$ at integer multiples of $[\Omega_0,\Omega_0]$. If the sampling rate is reduced to $[\Omega_0/N,\Omega_0/N]$ the replicas move closer together. 
+
+Frequencies greater than $\frac{\Omega_0}{2N} = \frac{\pi}{2T}$ will cause aliasing. 
+
+Anyway, eqn.~\ref{fig:sampling1d} used to obtain $f[m,n]$. We now want to resample the original at a higher frequency. SO we need to re-estimate the original spectrum $F(\omega_1,\omega_2)$. Can be done by cropping at $(0,0)$ and cutting off other replications and re-scaling.
+
+This is done with a LPF $H_0(\omega_1,\omega_2)\rightleftarrows(x,y)$ with the frequency response:
+\begin{align}
+    H_0(\omega_1,\omega_2) &= D^2\text{rect}\left(\frac{\omega_1}{2\Omega_0},\frac{\omega_2}{2\Omega_0}\right)\notag\\
+    &= 
+    \begin{cases}
+        D^2 \quad &\text{ for } |\omega_1| < \Omega_0 \text{ and } |\omega_2| < \Omega_0\\
+        0 \quad &\text{otherwise} 
+    \end{cases}
+\end{align}
+
+Applying $F(\omega_1,\omega_2) = H_0(\omega_1,\omega_2)F_s(\omega_1,\omega_2)$ gives us the spectrum of the analogue signal. Next we want to resample.  To avoid aliasing an ideal low-pass filter $H_\mathcal{N}(\omega_1,\omega_2)$ is used with cutoff at $[\pm \Omega_0/(2N),\pm \Omega_0/(2N)]$ with frequency response:
+\begin{align}
+    H_\mathcal{N}(\omega_1,\omega_2) &= \text{rect}\left(\frac{\omega_1\mathcal{N}}{2\Omega_0},\frac{\omega_2\mathcal{N}}{2\Omega_0}\right)\\
+    &= 
+    \begin{cases}
+        1 \quad &\text{ for } |\omega_1| < \frac{\Omega_0}{\mathcal{N}} \text{ and } |\omega_2| < \frac{\Omega_0}{\mathcal{N}}\notag\\
+        0 \quad &\text{otherwise} 
+    \end{cases}
+\end{align}
+
+Combining both we get:
+\begin{align}
+    H(\omega_1,\omega_2) &= H_0(\omega_1,\omega_2)H_\mathcal{N}(\omega_1,\omega_2)\\
+    &=  D^2\text{rect}\left(\frac{\omega_1}{2\Omega_0},\frac{\omega_2}{2\Omega_0}\right)\text{rect}\left(\frac{\omega_1\mathcal{N}}{2\Omega_0},\frac{\omega_2\mathcal{N}}{2\Omega_0}\right)\notag\\
+    &= D^2\text{rect}\left(\frac{\omega_1\mathcal{N}}{2\Omega_0},\frac{\omega_2\mathcal{N}}{2\Omega_0}\right)\notag\\
+    &= 
+    \begin{cases}
+        D^2 \quad &\text{ for } |\omega_1| < \frac{\Omega_0}{\mathcal{N}} \text{ and } |\omega_2| < \frac{\Omega_0}{\mathcal{N}}\notag\\
+        0 \quad &\text{otherwise} 
+    \end{cases}
+\end{align}
+
+In the spatial domain impulse response:
+\begin{align}
+    h(x,y) &= \frac{1}{4\pi^2}\int\int D^2 \text{rect}\left(\frac{\omega_1}{2\Omega},\frac{\omega_2}{2\Omega}\right)e^{j(\omega_1x+\omega_2y)}d\omega_1\,d\omega_2\notag\\
+    &= \frac{D^2}{4\pi^2}\int_{-\Omega}^{\Omega}\int_{-\Omega}^{\Omega} e^{j(\omega_1x+\omega_2y)}d\omega_1\,d\omega_2\notag\\
+    &= \frac{D^2}{4\pi^2}\left(\frac{2}{x}\sin{(x\Omega)}\right) \int_{-\Omega}^{\Omega} e^{j(\omega_2y)}d\omega_2\notag\\
+    &= \frac{D^2}{4\pi^2}\frac{2}{x}\sin{(x\Omega)}\frac{2}{y}\sin{(y\Omega)}\notag\\
+    &= \frac{D^2}{4\pi^2}\underbrace{\mathcolor{blue}{2\Omega \text{sinc}(x\Omega)}\,\mathcolor{green}{2\Omega \text{sinc}(y\Omega)}}_{Separable}
+\end{align}
+
+Need to make the filter in digital domain. So has to be sampled. We want sampled at $y = hD$ $x = kD$ and $\Omega = \Omega_0/2\mathcal{N}=\pi/(D\mathcal{N)}$:
+\begin{align}
+    h[m,n] &= D^2\frac{1}{4\pi^2}\left[\frac{2\pi}{DN}\text{sinc}\left(\frac{mD\pi}{DN}\right)\right]\left[\frac{2\pi}{DN}\text{sinc}\left(\frac{nD\pi}{DN}\right)\right]\notag\\
+    &= \left[\frac{1}{N}\text{sinc}\left(\frac{m\pi}{N}\right)\right]\left[\frac{1}{N}\text{sinc}\left(\frac{n\pi}{N}\right)\right]
+\end{align}
+
+So the filter doesn't rely on the original sampling frequency, $\Omega_0$, only the sub-sampling factor $\mathcal{N}$. 
+
+The sinc function is infinitely long so the filter is IIR. So we need to truncate it to a length of $N$. But truncating would create a sharp discontinuity that will cause a ripple artefact. Need to use hamming window:
+\begin{equation}
+    h[m,n] = \left[\frac{w[m]}{N}\text{sinc}\left(\frac{m\pi}{N}\right)\right] \left[\frac{w[n]}{N}\text{sinc}\left(\frac{n\pi}{N}\right)\right]
+\end{equation}
+
+where $w$ is the Hamming window. In Fig.~\ref{fig:hamming} we see the FIR filter with rectange and hamming window. Hamming sacrifices slower roll off to remove the ripple.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\linewidth]{HAMMING.png}
+    \caption{Left: truncate/rectange/no window. Right: Hamming window.}
+    \label{fig:hamming}
+\end{figure}
+
+
+Last slide says Sinc function is long and expensive, similar results can be achieved with a Gaussian filter which is also separable with less ringing. 
+\begin{equation}
+    h[m,n] = \textrm{exp}-\left(\frac{m^2+n^2}{2\sigma^2}\right),
+\end{equation}
+where $\sigma$ affects the bandwidth. Need to specify the number of taps and normalise the filter coefficients so that the sum to 1. $h = h/\text{sum}(h)$. With this can get wat with shorter filter (15 taps). 
+
+Zooming or upsampling is \textit{much} harder.
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+We
+% \begin{theorem}
+%     This is a theorem.
+% \end{theorem}
+
+% \begin{proposition}
+%     This is a proposition.
+% \end{proposition}
+
+% \begin{principle}
+%     This is a principle.
+% \end{principle}
+\end{document}
